@@ -16,6 +16,13 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+}, {
+  indexes: [
+    {
+      name: 'users_email_idx',
+      fields: ['email'],
+    }
+  ]
 });
 
 User.beforeCreate(async (user) => {

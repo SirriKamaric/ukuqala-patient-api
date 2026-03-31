@@ -14,6 +14,17 @@ const Patient = sequelize.define('Patient', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+}, {
+  indexes: [
+    {
+      name: 'patients_name_idx',
+      fields: ['name'],
+    },
+    {
+      name: 'patients_condition_idx',
+      fields: ['condition'],
+    }
+  ]
 });
 
 module.exports = Patient;
