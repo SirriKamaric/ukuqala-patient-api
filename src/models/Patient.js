@@ -2,6 +2,12 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
 const Patient = sequelize.define('Patient', {
+  id: {
+    type: DataTypes.STRING,
+    primaryKey: true,
+    autoIncrement: false,
+    defaultValue: null,
+  },
   name: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -25,6 +31,12 @@ const Patient = sequelize.define('Patient', {
       fields: ['condition'],
     }
   ]
+});
+
+Patient.beforeCreate(async (patient) => {
+  const count = await Patient.count();
+  const number = String(count + 1).padStart(3, '0');
+  patient.id = `P${number}`;
 });
 
 module.exports = Patient;

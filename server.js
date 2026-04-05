@@ -4,7 +4,7 @@ require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
 
-sequelize.sync({ force: false })
+sequelize.sync({  force: false })
   .then(() => {
     console.log('Database connected and tables created');
     app.listen(PORT, () => {
