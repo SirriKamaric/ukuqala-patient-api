@@ -1,2 +1,7 @@
 node_modules
 .env
+# Ignore dependencies and sensitive data
+node_modules/
+.env
+dist/
+*.log
