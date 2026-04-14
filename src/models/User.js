@@ -1,13 +1,13 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const bcrypt = require('bcrypt');
+const { v4: uuidv4 } = require('uuid');
 
 const User = sequelize.define('User', {
   id: {
-    type: DataTypes.STRING,
+    type: DataTypes.UUID,
+    defaultValue: () => uuidv4(),
     primaryKey: true,
-    autoIncrement: false,
-    defaultValue: null,
   },
   name: {
     type: DataTypes.STRING,
@@ -32,9 +32,6 @@ const User = sequelize.define('User', {
 });
 
 User.beforeCreate(async (user) => {
-  const count = await User.count();
-  const number = String(count + 1).padStart(3, '0');
-  user.id = `U${number}`;
   user.password_hash = await bcrypt.hash(user.password_hash, 10);
 });
 

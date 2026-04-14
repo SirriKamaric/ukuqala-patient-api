@@ -7,7 +7,8 @@ app.use(express.json());
 const authRoutes = require('./routes/authRoutes');
 const patientRoutes = require('./routes/patientRoutes');
 
-app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/patients', patientRoutes);
+// Updated to v4 as per your requirement
+app.use('/api/v4/auth', authRoutes);
+app.use('/api/v4/patients', patientRoutes);
 
 module.exports = app;

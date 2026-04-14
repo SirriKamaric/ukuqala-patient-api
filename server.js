@@ -1,10 +1,10 @@
+require('dotenv').config();
 const app = require('./src/app');
 const sequelize = require('./src/config/database');
-require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
 
-sequelize.sync({  force: false })
+sequelize.sync({ force: false })
   .then(() => {
     console.log('Database connected and tables created');
     app.listen(PORT, () => {
@@ -14,3 +14,4 @@ sequelize.sync({  force: false })
   .catch((error) => {
     console.log('Error connecting to database:', error);
   });
+  
