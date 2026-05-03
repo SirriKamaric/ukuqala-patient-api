@@ -4,14 +4,14 @@ const sequelize = require('./src/config/database');
 
 const PORT = process.env.PORT || 3000;
 
-sequelize.sync({ force: false })
+// Sync database and start server
+sequelize.sync({ alter: true })
   .then(() => {
-    console.log('Database connected and tables created');
+    console.log('Database connected successfully and tables updated.');
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
   })
-  .catch((error) => {
-    console.log('Error connecting to database:', error);
+  .catch((err) => {
+    console.error('Unable to connect to the database:', err);
   });
-  

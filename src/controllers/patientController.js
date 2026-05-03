@@ -3,10 +3,13 @@ const Patient = require('../models/Patient');
 // Create a new patient
 exports.createPatient = async (req, res) => {
   try {
-    const { name, age, condition } = req.body;
+    // Extracting gender along with other fields for your Information System project
+    const { name, age, gender, condition } = req.body; 
+    
     const newPatient = await Patient.create({
       name,
       age,
+      gender, 
       condition,
       userId: req.user.id // Taken from the JWT token via verifyToken
     });
@@ -43,6 +46,7 @@ exports.updatePatient = async (req, res) => {
     const patient = await Patient.findByPk(req.params.id);
     if (!patient) return res.status(404).json({ message: 'Patient not found' });
     
+    // Updates name, age, gender, and condition based on req.body
     await patient.update(req.body);
     res.json(patient);
   } catch (error) {
@@ -57,7 +61,7 @@ exports.deletePatient = async (req, res) => {
     if (!patient) return res.status(404).json({ message: 'Patient not found' });
     
     await patient.destroy();
-    res.json({ message: 'Patient deleted' });
+    res.json({ message: 'Patient deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

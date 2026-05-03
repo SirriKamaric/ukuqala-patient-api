@@ -1,0 +1,54 @@
+/* frontend/src/styles/modal.css */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7); /* Dark semi-transparent overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--card-surface); /* #161B22 */
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color); /* #30363D */
+  width: 400px;
+  text-align: center;
+  color: var(--text-primary); /* #E6EDF3 */
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn-secondary {
+  background-color: #30363D;
+  color: #E6EDF3;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-danger {
+  background-color: var(--danger); /* #E74C3C */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-danger:hover {
+  opacity: 0.9;
+}

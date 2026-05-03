@@ -1,0 +1,51 @@
+/* Import specified fonts from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Inter:wght@400;600;700&family=Syne:wght@700&display=swap');
+
+:root {
+  /* Ukuqala Color Palette */
+  --primary-blue: #1a73e8;
+  --primary-orange: #e8800a;
+  --dark-bg: #0d1117;
+  --card-surface: #161b22;
+  --border-color: #30363d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --success: #2ea043;
+  --danger: #e74c3c;
+
+  /* Typography */
+  --font-headings: 'Syne', sans-serif;
+  --font-body: 'DM Sans', 'Inter', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--dark-bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-headings);
+  color: var(--text-primary);
+}
+
+/* Base button styles */
+button {
+  border-radius: 8px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  border: none;
+  transition: opacity 0.2s ease;
+}
+
+button:hover {
+  opacity: 0.9;
+}

@@ -13,15 +13,19 @@ const Patient = sequelize.define('Patient', {
     allowNull: false,
   },
   age: {
-    type: DataTypes.INTEGER, // Changed from date_of_birth to age
+    type: DataTypes.INTEGER, // Matches your requirement to use age
     allowNull: false,
+  },
+  gender: { // New field added for your Information System project
+    type: DataTypes.STRING,
+    allowNull: true,
   },
   condition: {
     type: DataTypes.STRING,
     allowNull: false,
   },
   userId: {
-    type: DataTypes.UUID, // This links to the User UUID
+    type: DataTypes.UUID, // Links to your practitioner account (SIRRI KAMARIC)
     allowNull: false,
   }
 });
