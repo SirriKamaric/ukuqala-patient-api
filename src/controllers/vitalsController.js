@@ -3,11 +3,11 @@ const Vitals = require('../models/Vitals');
 // Requirement 4.4: Add new vitals for a specific patient
 exports.addVitals = async (req, res) => {
     try {
-        const { id } = req.params; 
-        const { heart_rate, blood_pressure, temperature } = req.body;
+        const { id } = req.params;
+        const { heartRate, bloodPressure, temperature, respiratoryRate, oxygenSaturation } = req.body;
 
         // 1. Validation check for required fields
-        if (!heart_rate || !blood_pressure || !temperature) {
+        if (!heartRate || !bloodPressure || !temperature) {
             return res.status(400).json({ message: "All health metrics are required." });
         }
 
@@ -16,13 +16,15 @@ exports.addVitals = async (req, res) => {
             return res.status(401).json({ message: "User not authenticated" });
         }
 
-        // 3. Create entry with explicit field mapping
+        // 3. Create entry with EXPLICIT snake_case field mapping
         const vitals = await Vitals.create({
-            heart_rate,
-            blood_pressure,
-            temperature,
             patientId: id,
-            recordedBy: req.user.id 
+            heart_rate: heartRate,        // Mapped to model field
+            blood_pressure: bloodPressure, // Mapped to model field
+            temperature: temperature,      // Matches model
+            respiratory_rate: respiratoryRate || null,
+            oxygen_saturation: oxygenSaturation || null,
+            recordedBy: req.user.id       // Requirement 4.1 audit trail
         });
 
         res.status(201).json(vitals);
@@ -32,18 +34,17 @@ exports.addVitals = async (req, res) => {
     }
 };
 
-// Requirement 4.4: Fetch vitals history for a specific patient
+// Requirement 4.4: Fetch history
 exports.getVitalsByPatient = async (req, res) => {
     try {
         const { id } = req.params;
 
-        // 1. Fetch history with descending order to show latest first
+        // Fetch history in reverse chronological order
         const history = await Vitals.findAll({
             where: { patientId: id },
-            order: [['createdAt', 'DESC']] 
+            order: [['createdAt', 'DESC']]
         });
 
-        // 2. Return empty array rather than 404 if no history exists (prevents frontend crashes)
         res.status(200).json(history || []);
     } catch (error) {
         console.error("Vitals Retrieval Error:", error);

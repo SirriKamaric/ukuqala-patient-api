@@ -1,35 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const {
-    createPatient,
-    getAllPatients,
-    getPatientById,
-    updatePatient,
-    deletePatient,
-} = require('../controllers/patientController');
+const vitalsController = require('../controllers/vitalsController'); // Adjust path as needed
 
-const { 
-    getVitalsByPatient, 
-    addVitals 
-} = require('../controllers/vitalsController'); 
+// This line is likely missing or incorrect:
+router.post('/:id/vitals', vitalsController.addVitals);
 
-const { protect } = require('../middleware/authMiddleware');
-
-
-router.get('/ping', (req, res) => res.send('pong'));
-
-
-router.route('/:id/vitals')
-    .get(protect, getVitalsByPatient)
-    .post(protect, addVitals);
-
-router.route('/')
-    .get(protect, getAllPatients)
-    .post(protect, createPatient);
-
-router.route('/:id')
-    .get(protect, getPatientById)
-    .put(protect, updatePatient)
-    .delete(protect, deletePatient);
+// For fetching history:
+router.get('/:id/vitals', vitalsController.getVitalsByPatient);
 
 module.exports = router;

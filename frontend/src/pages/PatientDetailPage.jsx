@@ -11,61 +11,75 @@ const PatientDetailPage = () => {
   const [loading, setLoading] = useState(true);
 
   const [vitalsForm, setVitalsForm] = useState({
-    heart_rate: '',
-    blood_pressure: '',
+    heartRate: '',
+    bloodPressure: '',
     temperature: ''
   });
-
-  const fetchData = async () => {
-    try {
-      // 1. Fetch Patient Basic Info
-      const patientRes = await apiClient.get(`/patients/${id}`);
-      setPatient(patientRes.data);
-
-      // 2. Fetch Vitals (Separated to catch 404s gracefully)
-      try {
-        const vitalsRes = await apiClient.get(`/patients/${id}/vitals`);
-        setVitals(vitalsRes.data || []);
-      } catch (vitalsErr) {
-        console.warn("Vitals endpoint not found or empty:", vitalsErr.message);
-        setVitals([]); // Fallback to empty list
-      }
-    } catch (err) {
-      console.error("Critical Data fetch failed:", err);
-      // If the patient itself is 404, go back
-      navigate('/patients');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    const loadData = async () => {
-      await fetchData();
-    };
-    loadData();
-  }, [id]);
+  
 
   const handleAddVitals = async (e) => {
     e.preventDefault();
     try {
-      await apiClient.post(`/patients/${id}/vitals`, vitalsForm);
-      setVitalsForm({ heart_rate: '', blood_pressure: '', temperature: '' });
-      await fetchData(); // Refresh
-      alert("Vitals recorded successfully!");
+        /** 
+         * FIX 1: Corrected URL path to match nested backend structure 
+         * Path: /patients/:id/vitals
+         */
+        await apiClient.post(`/patients/${id}/vitals`, {
+            heartRate: Number(vitalsForm.heartRate),
+            bloodPressure: vitalsForm.bloodPressure,
+            temperature: Number(vitalsForm.temperature),
+        });
+        
+        setVitalsForm({ heartRate: '', bloodPressure: '', temperature: '' });
+
+        // ✅ Refresh vitals using the corrected nested GET path
+        const vitalsRes = await apiClient.get(`/patients/${id}/vitals`);
+        setVitals(vitalsRes.data || []);
+
     } catch (err) {
-      console.error("Failed to add vitals:", err);
-      alert("Error: Backend vitals route (POST) not found (404). Check your backend controller.");
+        console.error('Failed to add vitals:', err.response?.data || err.message);
+        alert(err.response?.data?.message || 'Failed to save vitals.');
     }
   };
+
+  useEffect(() => {
+    if (!id) return;
+
+    const loadData = async () => {
+      try {
+        const patientRes = await apiClient.get(`/patients/${id}`);
+        setPatient(patientRes.data);
+
+        try {
+          /** 
+           * FIX 2: Corrected URL path for initial load
+           */
+          const vitalsRes = await apiClient.get(`/patients/${id}/vitals`);
+          setVitals(vitalsRes.data || []);
+        } catch (vitalsErr) {
+          console.warn('Vitals fetch failed:', vitalsErr.message);
+          setVitals([]);
+        }
+      } catch (err) {
+        console.error('Patient fetch failed:', err);
+        navigate('/patients');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [id, navigate]);
 
   if (loading) return <DashboardLayout><div>Loading patient profile...</div></DashboardLayout>;
 
   return (
     <DashboardLayout>
       <div style={{ display: 'flex', gap: '20px', flexDirection: 'column' }}>
+
+        {/* Patient Info */}
         <div style={cardStyle}>
-          <button onClick={() => navigate('/patients')} style={{marginBottom: '10px', cursor: 'pointer'}}>← Back to List</button>
+          <button onClick={() => navigate('/patients')} style={{ marginBottom: '10px', cursor: 'pointer' }}>← Back to List</button>
           <h2 style={{ color: 'var(--primary-blue)' }}>{patient?.name}'s Profile</h2>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '10px' }}>
             <p><strong>Age:</strong> {patient?.age}</p>
@@ -73,29 +87,55 @@ const PatientDetailPage = () => {
           </div>
         </div>
 
+        {/* Add Vitals Form */}
         <div style={cardStyle}>
-          <h3>Record New Vitals (Requirement 4.4)</h3>
+          <h3>Record New Vitals</h3>
           <form onSubmit={handleAddVitals} style={{ display: 'flex', gap: '10px', marginTop: '15px', flexWrap: 'wrap' }}>
-            <input type="number" placeholder="HR (bpm)" value={vitalsForm.heart_rate} onChange={(e) => setVitalsForm({...vitalsForm, heart_rate: e.target.value})} style={inputStyle} required />
-            <input type="text" placeholder="BP (120/80)" value={vitalsForm.blood_pressure} onChange={(e) => setVitalsForm({...vitalsForm, blood_pressure: e.target.value})} style={inputStyle} required />
-            <input type="number" step="0.1" placeholder="Temp (°C)" value={vitalsForm.temperature} onChange={(e) => setVitalsForm({...vitalsForm, temperature: e.target.value})} style={inputStyle} required />
+            <input
+              type="number"
+              placeholder="HR (bpm)"
+              value={vitalsForm.heartRate}
+              onChange={(e) => setVitalsForm({ ...vitalsForm, heartRate: e.target.value })}
+              style={inputStyle}
+              required
+            />
+            <input
+              type="text"
+              placeholder="BP (120/80)"
+              value={vitalsForm.bloodPressure}
+              onChange={(e) => setVitalsForm({ ...vitalsForm, bloodPressure: e.target.value })}
+              style={inputStyle}
+              required
+            />
+            <input
+              type="number"
+              step="0.1"
+              placeholder="Temp (°C)"
+              value={vitalsForm.temperature}
+              onChange={(e) => setVitalsForm({ ...vitalsForm, temperature: e.target.value })}
+              style={inputStyle}
+              required
+            />
             <button type="submit" style={addBtnStyle}>Save Vitals</button>
           </form>
         </div>
 
+        {/* Vitals History */}
         <div style={cardStyle}>
           <h3>Vitals History</h3>
           <div style={{ marginTop: '15px' }}>
             {vitals.length > 0 ? vitals.map((v) => (
               <div key={v.id} style={vitalsEntryStyle}>
-                <span><strong>HR:</strong> {v.heart_rate}</span>
+                {/* FIX 3: Mapped to snake_case fields used in your Vitals.js model */}
+                <span><strong>HR:</strong> {v.heart_rate} bpm</span>
                 <span><strong>BP:</strong> {v.blood_pressure}</span>
                 <span><strong>Temp:</strong> {v.temperature}°C</span>
                 <span style={{ color: '#888', fontSize: '12px' }}>{new Date(v.createdAt).toLocaleString()}</span>
               </div>
-            )) : <p style={{ color: '#666' }}>No vitals found. Ensure the route /api/v4/patients/:id/vitals is set up in your backend.</p>}
+            )) : <p style={{ color: '#666' }}>No vitals recorded yet for this patient.</p>}
           </div>
         </div>
+
       </div>
     </DashboardLayout>
   );
