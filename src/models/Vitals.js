@@ -1,28 +1,36 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
-const { v4: uuidv4 } = require('uuid'); // Matches your existing User.js logic
+const sequelize = require('../config/database'); // Or your db path
 
 const Vitals = sequelize.define('Vitals', {
-    id: { 
-        type: DataTypes.UUID, 
-        defaultValue: () => uuidv4(), 
-        primaryKey: true 
-    },
-    patientId: { 
-        type: DataTypes.UUID, 
-        allowNull: false 
-    },
-    bloodPressure: { type: DataTypes.STRING }, // e.g., "120/80"
-    heartRate: { type: DataTypes.INTEGER },
-    temperature: { type: DataTypes.FLOAT },
-    respiratoryRate: { type: DataTypes.INTEGER },
-    oxygenSaturation: { type: DataTypes.INTEGER },
-    recordedBy: { 
-        type: DataTypes.UUID, 
-        allowNull: false 
-    }
-}, { 
-    timestamps: true 
+  id: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
+    primaryKey: true,
+  },
+  heart_rate: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  blood_pressure: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  temperature: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
+  // CRITICAL: Ensure this field exists to link to the Patient
+  patientId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+  },
+  // Requirement 4.1: Track who recorded the data
+  recordedBy: {
+    type: DataTypes.UUID,
+    allowNull: true,
+  }
+}, {
+  timestamps: true, // This automatically provides the 'createdAt' field used in the UI
 });
 
 module.exports = Vitals;

@@ -1,25 +1,52 @@
 const Vitals = require('../models/Vitals');
 
+// Requirement 4.4: Add new vitals for a specific patient
 exports.addVitals = async (req, res) => {
     try {
+        const { id } = req.params; 
+        const { heart_rate, blood_pressure, temperature } = req.body;
+
+        // 1. Validation check for required fields
+        if (!heart_rate || !blood_pressure || !temperature) {
+            return res.status(400).json({ message: "All health metrics are required." });
+        }
+
+        // 2. Safety check for your auth middleware (Requirement 4.1)
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({ message: "User not authenticated" });
+        }
+
+        // 3. Create entry with explicit field mapping
         const vitals = await Vitals.create({
-            ...req.body,
-            recordedBy: req.user.id // Taken from your auth middleware
+            heart_rate,
+            blood_pressure,
+            temperature,
+            patientId: id,
+            recordedBy: req.user.id 
         });
+
         res.status(201).json(vitals);
     } catch (error) {
+        console.error("Vitals Creation Error:", error);
         res.status(500).json({ message: "Error saving vitals", error: error.message });
     }
 };
 
-exports.getPatientVitals = async (req, res) => {
+// Requirement 4.4: Fetch vitals history for a specific patient
+exports.getVitalsByPatient = async (req, res) => {
     try {
+        const { id } = req.params;
+
+        // 1. Fetch history with descending order to show latest first
         const history = await Vitals.findAll({
-            where: { patientId: req.params.patientId },
-            order: [['createdAt', 'DESC']]
+            where: { patientId: id },
+            order: [['createdAt', 'DESC']] 
         });
-        res.json(history);
+
+        // 2. Return empty array rather than 404 if no history exists (prevents frontend crashes)
+        res.status(200).json(history || []);
     } catch (error) {
+        console.error("Vitals Retrieval Error:", error);
         res.status(500).json({ message: "Error fetching history", error: error.message });
     }
 };

@@ -6,7 +6,9 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import PatientsPage from './pages/PatientsPage';
-import AddPatientPage from './pages/AddPatientPage'; // Import the new page
+import AddPatientPage from './pages/AddPatientPage';
+import EditPatientPage from './pages/EditPatientPage';
+import PatientDetailPage from './pages/PatientDetailPage'; // FIXED: Added this import
 
 // Requirement 4.1: Route Protection Component
 const PrivateRoute = ({ children }) => {
@@ -43,12 +45,30 @@ function App() {
             } 
           />
           
-          {/* New Add Patient Route */}
           <Route 
             path="/add-patient" 
             element={
               <PrivateRoute>
                 <AddPatientPage />
+              </PrivateRoute>
+            } 
+          />
+
+          <Route 
+            path="/edit-patient/:id" 
+            element={
+              <PrivateRoute>
+                <EditPatientPage />
+              </PrivateRoute>
+            } 
+          />
+
+          {/* Requirement 4.3: Patient Detail Route */}
+          <Route 
+            path="/patients/:id" 
+            element={
+              <PrivateRoute>
+                <PatientDetailPage />
               </PrivateRoute>
             } 
           />

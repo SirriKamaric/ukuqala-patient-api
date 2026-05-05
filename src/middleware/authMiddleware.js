@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-const verifyToken = (req, res, next) => {
+const protect = (req, res, next) => { // Renamed to 'protect' to match your routes
   const authHeader = req.headers['authorization'];
 
   if (!authHeader) {
@@ -12,11 +12,12 @@ const verifyToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    req.user = decoded; // This allows vitalsController to access req.user.id
     next();
   } catch (error) {
     return res.status(401).json({ message: 'Invalid token' });
   }
 };
 
-module.exports = verifyToken;
+// Export as an object so { protect } works in your routes
+module.exports = { protect };
