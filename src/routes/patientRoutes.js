@@ -15,15 +15,14 @@ const {
 
 const { protect } = require('../middleware/authMiddleware');
 
-// --- DEBUG ---
+
 router.get('/ping', (req, res) => res.send('pong'));
 
-// --- Requirement 4.4: VITALS (MUST BE ABOVE GENERIC /:id) ---
+
 router.route('/:id/vitals')
     .get(protect, getVitalsByPatient)
     .post(protect, addVitals);
 
-// --- Requirement 4.3: PATIENT CRUD ---
 router.route('/')
     .get(protect, getAllPatients)
     .post(protect, createPatient);
