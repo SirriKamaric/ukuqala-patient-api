@@ -1,16 +1,61 @@
-# React + Vite
+Ukuqala Patient Management - Frontend
+This is the React-based frontend for the Ukuqala platform, an AI-powered health support system designed for medical practitioners in Cameroon.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+🚀 Progress Summary
+As of May 6, 2026, the following core modules are fully implemented and integrated with the Version 4 Backend API:
 
-Currently, two official plugins are available:
+1. Authentication (Requirement 4.1)
+Secure Login/Register: Forms are connected to /api/v4/auth endpoints.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Token Persistence: JWT tokens are securely stored in localStorage upon successful login.
 
-## React Compiler
+Route Protection: An AuthMiddleware pattern ensures that only logged-in users can access the Dashboard and Patient data.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+2. Patient Management (Requirement 4.3)
+Patient List: Fetches and displays all patients associated with the practitioner.
 
-## Expanding the ESLint configuration
+Profile Views: Detailed view for individual patients (e.g., "Kate's Profile").
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+CRUD Operations: Functional logic for adding, editing, and deleting patient records.
+
+3. Vitals Tracking (Requirement 4.4)
+Nested Integration: Successfully implemented nested routing at /patients/:id/vitals.
+
+History Display: Vitals history is fetched and displayed in reverse chronological order.
+
+Real-time Recording: Practitioners can record Heart Rate, Blood Pressure, and Temperature.
+
+4. API Communication (Requirement 5)
+Centralized Client: apiClient.js is configured using Axios with environment variable support (VITE_API_URL).
+
+Interceptors:
+
+Request: Automatically attaches Bearer tokens to all outgoing calls.
+
+Response: Automatically handles 401 Unauthorized errors by clearing the session and redirecting to login.
+
+🛠 Tech Stack
+Framework: React (Vite-powered)
+
+State Management: React Hooks (useState, useEffect)
+
+Routing: React Router DOM
+
+API Client: Axios with Interceptors
+
+Styling: Modern CSS with Flexbox (Responsive Design)
+
+📦 Installation & Setup
+Install Dependencies:
+
+Bash
+npm install
+Environment Configuration:
+Create a .env file in the root directory:
+
+Code snippet
+VITE_API_URL=http://localhost:3000
+Run Development Server:
+
+Bash
+npm run dev

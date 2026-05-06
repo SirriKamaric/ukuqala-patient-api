@@ -15,30 +15,32 @@ const PatientDetailPage = () => {
     bloodPressure: '',
     temperature: ''
   });
-  
 
   const handleAddVitals = async (e) => {
     e.preventDefault();
     try {
-        /** 
-         * FIX 1: Corrected URL path to match nested backend structure 
-         * Path: /patients/:id/vitals
-         */
-        await apiClient.post(`/patients/${id}/vitals`, {
-            heartRate: Number(vitalsForm.heartRate),
-            bloodPressure: vitalsForm.bloodPressure,
-            temperature: Number(vitalsForm.temperature),
-        });
-        
-        setVitalsForm({ heartRate: '', bloodPressure: '', temperature: '' });
+      /**
+       * ✅ FIXED: Target the nested patient endpoint
+       * Matches router.post('/:id/vitals', ...) in patientRoutes.js
+       */
+      await apiClient.post(`/patients/${id}/vitals`, {
+        heartRate: Number(vitalsForm.heartRate),
+        bloodPressure: vitalsForm.bloodPressure,
+        temperature: Number(vitalsForm.temperature),
+      });
 
-        // ✅ Refresh vitals using the corrected nested GET path
-        const vitalsRes = await apiClient.get(`/patients/${id}/vitals`);
-        setVitals(vitalsRes.data || []);
+      setVitalsForm({ heartRate: '', bloodPressure: '', temperature: '' });
+
+      // ✅ Refresh vitals using the nested GET path
+      const vitalsRes = await apiClient.get(`/patients/${id}/vitals`);
+      const sorted = (vitalsRes.data || []).sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      setVitals(sorted);
 
     } catch (err) {
-        console.error('Failed to add vitals:', err.response?.data || err.message);
-        alert(err.response?.data?.message || 'Failed to save vitals.');
+      console.error('Failed to add vitals:', err.response?.data || err.message);
+      alert(err.response?.data?.message || 'Failed to save vitals.');
     }
   };
 
@@ -51,11 +53,15 @@ const PatientDetailPage = () => {
         setPatient(patientRes.data);
 
         try {
-          /** 
-           * FIX 2: Corrected URL path for initial load
+          /**
+           * ✅ FIXED: Consistent URL /patients/${id}/vitals
+           * This resolves the GET 404 you were seeing
            */
           const vitalsRes = await apiClient.get(`/patients/${id}/vitals`);
-          setVitals(vitalsRes.data || []);
+          const sorted = (vitalsRes.data || []).sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          );
+          setVitals(sorted);
         } catch (vitalsErr) {
           console.warn('Vitals fetch failed:', vitalsErr.message);
           setVitals([]);
@@ -71,12 +77,12 @@ const PatientDetailPage = () => {
     loadData();
   }, [id, navigate]);
 
+  // ... (Rest of the component remains the same for styling and UI)
   if (loading) return <DashboardLayout><div>Loading patient profile...</div></DashboardLayout>;
 
   return (
     <DashboardLayout>
       <div style={{ display: 'flex', gap: '20px', flexDirection: 'column' }}>
-
         {/* Patient Info */}
         <div style={cardStyle}>
           <button onClick={() => navigate('/patients')} style={{ marginBottom: '10px', cursor: 'pointer' }}>← Back to List</button>
@@ -126,21 +132,20 @@ const PatientDetailPage = () => {
           <div style={{ marginTop: '15px' }}>
             {vitals.length > 0 ? vitals.map((v) => (
               <div key={v.id} style={vitalsEntryStyle}>
-                {/* FIX 3: Mapped to snake_case fields used in your Vitals.js model */}
-                <span><strong>HR:</strong> {v.heart_rate} bpm</span>
-                <span><strong>BP:</strong> {v.blood_pressure}</span>
+                <span><strong>HR:</strong> {v.heartRate} bpm</span>
+                <span><strong>BP:</strong> {v.bloodPressure}</span>
                 <span><strong>Temp:</strong> {v.temperature}°C</span>
                 <span style={{ color: '#888', fontSize: '12px' }}>{new Date(v.createdAt).toLocaleString()}</span>
               </div>
             )) : <p style={{ color: '#666' }}>No vitals recorded yet for this patient.</p>}
           </div>
         </div>
-
       </div>
     </DashboardLayout>
   );
 };
 
+// ... Styles (cardStyle, inputStyle, etc.) remain unchanged
 const cardStyle = { background: 'var(--card-surface)', padding: '20px', borderRadius: '12px', border: '1px solid var(--border-color)' };
 const inputStyle = { padding: '10px', borderRadius: '6px', border: '1px solid #444', background: '#222', color: 'white', flex: '1', minWidth: '120px' };
 const addBtnStyle = { background: 'var(--primary-blue)', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '6px', cursor: 'pointer' };

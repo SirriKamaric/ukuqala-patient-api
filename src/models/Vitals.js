@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database'); // Or your db path
+const sequelize = require('../config/database');
 
 const Vitals = sequelize.define('Vitals', {
   id: {
@@ -7,11 +7,11 @@ const Vitals = sequelize.define('Vitals', {
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
   },
-  heart_rate: {
+  heartRate: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  blood_pressure: {
+  bloodPressure: {
     type: DataTypes.STRING,
     allowNull: false,
   },
@@ -19,18 +19,16 @@ const Vitals = sequelize.define('Vitals', {
     type: DataTypes.FLOAT,
     allowNull: false,
   },
-  // CRITICAL: Ensure this field exists to link to the Patient
   patientId: {
     type: DataTypes.UUID,
     allowNull: false,
   },
-  // Requirement 4.1: Track who recorded the data
   recordedBy: {
     type: DataTypes.UUID,
     allowNull: true,
   }
 }, {
-  timestamps: true, // This automatically provides the 'createdAt' field used in the UI
+  timestamps: true,
 });
 
 module.exports = Vitals;

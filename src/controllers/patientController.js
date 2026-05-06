@@ -5,7 +5,6 @@ exports.createPatient = async (req, res) => {
   try {
     const { name, age, gender, condition } = req.body; 
     
-    // Ensure req.user exists from our protect middleware
     if (!req.user || !req.user.id) {
         return res.status(401).json({ message: "User not authenticated" });
     }
@@ -20,15 +19,13 @@ exports.createPatient = async (req, res) => {
     
     res.status(201).json(newPatient);
   } catch (error) {
-    // Better error logging for debugging your dissertation implementation
     res.status(400).json({ message: "Validation error", error: error.message });
   }
 };
 
-// Requirement 4.3: Get all patients
+// Requirement 4.3: Get all patients for the dashboard/list
 exports.getAllPatients = async (req, res) => {
   try {
-    // Only fetch patients belonging to the logged-in user for better data privacy
     const patients = await Patient.findAll({
         where: { userId: req.user.id }
     });
@@ -38,14 +35,14 @@ exports.getAllPatients = async (req, res) => {
   }
 };
 
-// Get single patient
+// Requirement 4.3: Get single patient detail
 exports.getPatientById = async (req, res) => {
   try {
     const patient = await Patient.findOne({
         where: { id: req.params.id, userId: req.user.id }
     });
     
-    if (!patient) return res.status(404).json({ message: 'Patient not found or unauthorized' });
+    if (!patient) return res.status(404).json({ message: 'Patient not found' });
     res.json(patient);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -68,7 +65,7 @@ exports.updatePatient = async (req, res) => {
   }
 };
 
-// Requirement 4.3: Delete patient
+// Delete patient
 exports.deletePatient = async (req, res) => {
   try {
     const patient = await Patient.findOne({

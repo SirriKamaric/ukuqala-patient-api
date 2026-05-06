@@ -1,9 +1,7 @@
-import { createContext, useState, useContext } from 'react';
-
-const AuthContext = createContext();
+import { useState } from 'react';
+import { AuthContext } from './AuthContext';
 
 export const AuthProvider = ({ children }) => {
-  // 1. Unified Initialization Logic
   const [authState, setAuthState] = useState(() => {
     const savedUser = localStorage.getItem('user');
     let user = null;
@@ -16,7 +14,6 @@ export const AuthProvider = ({ children }) => {
       }
     }
 
-    // Return both user and loading: false immediately
     return { user, loading: false };
   });
 
@@ -32,17 +29,14 @@ export const AuthProvider = ({ children }) => {
     setAuthState({ user: null, loading: false });
   };
 
-  // Provide the state values to the rest of the app
   return (
-    <AuthContext.Provider value={{ 
-      user: authState.user, 
-      loading: authState.loading, 
-      login, 
-      logout 
+    <AuthContext.Provider value={{
+      user: authState.user,
+      loading: authState.loading,
+      login,
+      logout
     }}>
       {children}
     </AuthContext.Provider>
   );
 };
-
-export const useAuth = () => useContext(AuthContext);
