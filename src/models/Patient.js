@@ -11,12 +11,18 @@ const Patient = sequelize.define('Patient', {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: true
+    }
   },
   age: {
-    type: DataTypes.INTEGER, // Matches your requirement to use age
+    type: DataTypes.INTEGER,
     allowNull: false,
+    validate: {
+      min: 0 // Prevents invalid academic data entries
+    }
   },
-  gender: { // New field added for your Information System project
+  gender: { 
     type: DataTypes.STRING,
     allowNull: true,
   },
@@ -25,9 +31,21 @@ const Patient = sequelize.define('Patient', {
     allowNull: false,
   },
   userId: {
-    type: DataTypes.UUID, // Links to your practitioner account (SIRRI KAMARIC)
+    type: DataTypes.UUID, 
     allowNull: false,
+    references: {
+      model: 'Users', // Explicitly links to the practitioner table
+      key: 'id'
+    }
   }
+}, {
+  // Added for better database performance in your study
+  indexes: [
+    {
+      fields: ['userId']
+    }
+  ],
+  timestamps: true // Tracks when patients are added/updated (Requirement 6.2)
 });
 
 module.exports = Patient;

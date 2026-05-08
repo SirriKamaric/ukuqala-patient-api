@@ -1,61 +1,30 @@
-Ukuqala Patient Management - Frontend
-This is the React-based frontend for the Ukuqala platform, an AI-powered health support system designed for medical practitioners in Cameroon.
+# Ukuqala Clinical Portal - Frontend
 
-🚀 Progress Summary
-As of May 6, 2026, the following core modules are fully implemented and integrated with the Version 4 Backend API:
+## 🚀 Setup Instructions
+1. Clone the repository.
+2. Navigate to the `frontend` directory.
+3. Run `npm install` to install dependencies.
+4. Create a `.env` file based on `.env.example` and set your `VITE_API_URL`.
+5. Run `npm run dev` to start the development server.
 
-1. Authentication (Requirement 4.1)
-Secure Login/Register: Forms are connected to /api/v4/auth endpoints.
+## 📂 Folder Structure
+- `src/api`: Centralized data fetching logic (Separation of Concerns).
+- `src/components`: Reusable UI elements (Buttons, Modals, Cards).
+- `src/context`: Auth state management (JWT handling).
+- `src/pages`: Full-page views for Dashboard and Patient Management.
+- `src/styles`: Global CSS and Design System.
 
-Token Persistence: JWT tokens are securely stored in localStorage upon successful login.
+## 📄 Page Directory
+- **LoginPage**: Secure authentication entry.
+- **DashboardPage**: High-level overview of clinical logs and system status.
+- **PatientsPage**: Complete directory for managing patient records.
+- **PatientDetailPage**: In-depth view of specific patient history and vitals.
 
-Route Protection: An AuthMiddleware pattern ensures that only logged-in users can access the Dashboard and Patient data.
+## 🛠 External Packages
+- `axios`: For robust API communication.
+- `react-router-dom`: For client-side navigation.
+- `lucide-react`: (If used) for consistent iconography.
 
-2. Patient Management (Requirement 4.3)
-Patient List: Fetches and displays all patients associated with the practitioner.
-
-Profile Views: Detailed view for individual patients (e.g., "Kate's Profile").
-
-CRUD Operations: Functional logic for adding, editing, and deleting patient records.
-
-3. Vitals Tracking (Requirement 4.4)
-Nested Integration: Successfully implemented nested routing at /patients/:id/vitals.
-
-History Display: Vitals history is fetched and displayed in reverse chronological order.
-
-Real-time Recording: Practitioners can record Heart Rate, Blood Pressure, and Temperature.
-
-4. API Communication (Requirement 5)
-Centralized Client: apiClient.js is configured using Axios with environment variable support (VITE_API_URL).
-
-Interceptors:
-
-Request: Automatically attaches Bearer tokens to all outgoing calls.
-
-Response: Automatically handles 401 Unauthorized errors by clearing the session and redirecting to login.
-
-🛠 Tech Stack
-Framework: React (Vite-powered)
-
-State Management: React Hooks (useState, useEffect)
-
-Routing: React Router DOM
-
-API Client: Axios with Interceptors
-
-Styling: Modern CSS with Flexbox (Responsive Design)
-
-📦 Installation & Setup
-Install Dependencies:
-
-Bash
-npm install
-Environment Configuration:
-Create a .env file in the root directory:
-
-Code snippet
-VITE_API_URL=http://localhost:3000
-Run Development Server:
-
-Bash
-npm run dev
+## ⚠️ Known Limitations
+- Vitals history currently displays the most recent 10 entries.
+- Search functionality is restricted to patient names.

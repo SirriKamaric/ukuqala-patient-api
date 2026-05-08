@@ -1,15 +1,13 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { loginUser } from '../api/auth';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  
-  // Use the 'login' function from context, not just 'setUser'
-  const { login } = useAuth(); 
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -17,92 +15,84 @@ const LoginPage = () => {
     setError('');
     try {
       const data = await loginUser({ email, password });
-      
-      /**
-       * The 'data' object from your v4 backend contains:
-       * { token: "...", user: { id: "...", email: "..." } }
-       * We pass both to the login function so it saves the token to localStorage.
-       */
       if (data.token) {
-        login(data.user || { email }, data.token);
+        login(data.token, data.user || { name: email.split('@')[0] });
         navigate('/dashboard');
       } else {
-        throw new Error('No token received from server');
+        throw new Error('No token received.');
       }
-
     } catch (err) {
-      console.error("Login detail error:", err);
-      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
-    }
-  };
-
-  const styles = {
-    container: {
-      height: '100vh',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: 'var(--dark-bg)'
-    },
-    card: {
-      backgroundColor: 'var(--card-surface)',
-      padding: '40px',
-      borderRadius: '12px',
-      width: '100%',
-      maxWidth: '400px',
-      border: '1px solid var(--border-color)'
-    },
-    input: {
-      width: '100%',
-      padding: '12px',
-      marginBottom: '20px',
-      backgroundColor: 'var(--dark-bg)',
-      border: '1px solid var(--border-color)',
-      color: 'white',
-      borderRadius: '8px'
-    },
-    button: {
-      width: '100%',
-      padding: '12px',
-      backgroundColor: 'var(--primary-blue)',
-      color: 'white',
-      fontWeight: 'bold',
-      border: 'none',
-      borderRadius: '8px',
-      cursor: 'pointer'
+      const serverMessage = err.response?.data?.message || 'Login failed. Please check your credentials.';
+      setError(serverMessage);
     }
   };
 
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h2 style={{ marginBottom: '20px', textAlign: 'center', color: 'white' }}>Ukuqala Login</h2>
-        {error && <p style={{ color: 'var(--danger)', marginBottom: '15px', textAlign: 'center' }}>{error}</p>}
+        <h2 style={styles.title}>Ukuqala Login</h2>
+        {error && <div style={styles.errorBanner}>{error}</div>}
         <form onSubmit={handleSubmit}>
-          <input 
-            type="email" 
-            placeholder="Email" 
-            style={styles.input} 
+          <label style={styles.label}>Email Address</label>
+          <input
+            type="email"
+            placeholder="Enter your email"
+            style={styles.input}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <input 
-            type="password" 
-            placeholder="Password" 
-            style={styles.input} 
+          <label style={styles.label}>Password</label>
+          <input
+            type="password"
+            placeholder="Enter your password"
+            style={styles.input}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit" style={styles.button}>Login</button>
+          <button type="submit" style={styles.button}>Sign In</button>
         </form>
-        <p style={{ marginTop: '20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-          Don't have an account? <Link to="/register" style={{ color: 'var(--primary-orange)' }}>Register</Link>
+        <p style={styles.footerText}>
+          Don't have an account?{' '}
+          <Link to="/register" style={styles.link}>Register</Link>
         </p>
       </div>
     </div>
   );
+};
+
+const styles = {
+  container: {
+    height: '100vh', display: 'flex',
+    justifyContent: 'center', alignItems: 'center',
+    backgroundColor: '#0f172a'
+  },
+  card: {
+    backgroundColor: '#1e293b', padding: '40px',
+    borderRadius: '12px', width: '100%', maxWidth: '400px',
+    border: '1px solid #334155', boxShadow: '0 10px 25px rgba(0,0,0,0.3)'
+  },
+  title: { marginBottom: '24px', textAlign: 'center', color: '#f8fafc', fontSize: '1.5rem' },
+  label: { display: 'block', color: '#94a3b8', marginBottom: '8px', fontSize: '0.875rem' },
+  input: {
+    width: '100%', padding: '12px', marginBottom: '20px',
+    backgroundColor: '#0f172a', border: '1px solid #334155',
+    color: 'white', borderRadius: '8px', boxSizing: 'border-box'
+  },
+  button: {
+    width: '100%', padding: '12px', backgroundColor: '#3b82f6',
+    color: 'white', fontWeight: 'bold', border: 'none',
+    borderRadius: '8px', cursor: 'pointer', marginTop: '10px'
+  },
+  errorBanner: {
+    color: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    padding: '10px', borderRadius: '6px', marginBottom: '20px',
+    textAlign: 'center', fontSize: '0.9rem',
+    border: '1px solid rgba(239, 68, 68, 0.2)'
+  },
+  footerText: { marginTop: '24px', textAlign: 'center', color: '#94a3b8' },
+  link: { color: '#3b82f6', textDecoration: 'none', fontWeight: '500' }
 };
 
 export default LoginPage;

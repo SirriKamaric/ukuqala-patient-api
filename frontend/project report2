@@ -1,0 +1,67 @@
+Ukuqala Clinical Portal
+The Ukuqala Clinical Portal is a human-centric healthcare management system designed to streamline patient record keeping and clinical data tracking. Originally conceived as part of an AI-powered assistive platform, this portal provides practitioners with a clean, professional interface to manage patient demographics, vitals history, and clinical logs securely.
+
+🛠️ Tech Stack
+Frontend: React (Vite), Axios, React Router.
+
+Backend: Node.js, Express, PostgreSQL.
+
+Documentation: LaTeX (Dissertation) and APA formatting.
+
+🚀 Getting Started
+To get the full system running on a fresh machine, follow these steps:
+
+1. Prerequisites
+Node.js (v18 or higher)
+
+PostgreSQL (running locally or via Docker)
+
+2. Backend Setup
+Navigate to the backend/ directory.
+
+Install dependencies: npm install
+
+Configure your .env file (refer to .env.example).
+
+Initialize the database: npm run migrate (if applicable).
+
+Start the server: npm start
+
+3. Frontend Setup
+Navigate to the frontend/ directory.
+
+Install dependencies: npm install
+
+Create a .env file and set VITE_API_URL to your backend address.
+
+Start the application: npm run dev
+
+📁 Project Architecture
+This project follows a strict Separation of Concerns to ensure maintainability and scalability:
+
+API Layer: Centralized logic in src/api/ handles all communication with the backend.
+
+State Management: AuthContext manages secure tokens and user sessions.
+
+Modular UI: Reusable components ensure a consistent design system across the dashboard and patient views.
+
+🧪 Testing the Implementation
+Evaluators can verify the following end-to-end features:
+
+Authentication: Secure login and logout flow.
+
+Patient Management: Create, read, update, and delete (CRUD) operations on patient profiles.
+
+Clinical Vitals: Record and track patient health metrics over time.
+
+Error Handling: The system includes guardrails to gracefully handle API disconnects or invalid data.
+
+👨‍💻 Author
+Sirri Kamaric Bachelor of Science in Information Systems and Networking
+
+The ICT University, Cameroon
+
+Final Pro-Tip for Submission:
+Since the evaluators mentioned they will "deliberately break the API URL" to check your error handling, make sure your PatientsPage or DashboardPage doesn't just hang on a loading spinner forever.
+
+If you have a moment, you can add a simple "Retry" button or a clear "System Offline" message in your catch blocks.

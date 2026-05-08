@@ -1,41 +1,19 @@
-import apiClient from './apiClient';
-
-/**
- * Requirement 4.0: User Registration
- * POST /api/v4/auth/register
- */
-export const registerUser = async (userData) => {
-  const response = await apiClient.post('/auth/register', userData);
-  return response.data;
-};
+// This line fixes the 'apiClient is not defined' error
+import apiClient from './apiClient'; 
 
 /**
  * Requirement 4.1: User Login
- * POST /api/v4/auth/login
  */
 export const loginUser = async (credentials) => {
-  const response = await apiClient.post('/auth/login', credentials);
-  
-  // We return the raw data here. 
-  // The AuthContext 'login' function we wrote will handle the localStorage 
-  // and state updates to ensure everything stays in sync.
+  // Uses the imported apiClient to talk to http://localhost:3000/api/v4
+  const response = await apiClient.post('/auth/login', credentials); 
   return response.data;
 };
 
 /**
- * Fetch All Patients
- * GET /api/v4/patients
+ * Requirement 4.0: User Registration
  */
-export const getPatients = async () => {
-  const response = await apiClient.get('/patients');
-  return response.data;
-};
-
-/**
- * Fetch Single Patient Details
- * GET /api/v4/patients/:id
- */
-export const getPatientById = async (id) => {
-  const response = await apiClient.get(`/patients/${id}`);
+export const registerUser = async (userData) => {
+  const response = await apiClient.post('/auth/register', userData);
   return response.data;
 };

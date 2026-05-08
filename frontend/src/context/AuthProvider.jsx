@@ -1,42 +1,32 @@
 import { useState } from 'react';
 import { AuthContext } from './AuthContext';
 
-export const AuthProvider = ({ children }) => {
-  const [authState, setAuthState] = useState(() => {
-    const savedUser = localStorage.getItem('user');
-    let user = null;
-
-    if (savedUser && savedUser !== "undefined") {
-      try {
-        user = JSON.parse(savedUser);
-      } catch (e) {
-        console.error("Failed to parse user data", e);
-      }
-    }
-
-    return { user, loading: false };
+export function AuthProvider({ children }) {
+  const [token, setTokenState] = useState(
+    localStorage.getItem('ukuqala_token')
+  );
+  const [user, setUserState] = useState(() => {
+    const stored = localStorage.getItem('ukuqala_user');
+    return stored ? JSON.parse(stored) : null;
   });
 
-  const login = (userData, token) => {
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(userData));
-    setAuthState({ user: userData, loading: false });
+  const login = (tokenValue, userData) => {
+    localStorage.setItem('ukuqala_token', tokenValue);
+    localStorage.setItem('ukuqala_user', JSON.stringify(userData));
+    setTokenState(tokenValue);
+    setUserState(userData);
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setAuthState({ user: null, loading: false });
+    localStorage.removeItem('ukuqala_token');
+    localStorage.removeItem('ukuqala_user');
+    setTokenState(null);
+    setUserState(null);
   };
 
   return (
-    <AuthContext.Provider value={{
-      user: authState.user,
-      loading: authState.loading,
-      login,
-      logout
-    }}>
+    <AuthContext.Provider value={{ token, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
-};
+}

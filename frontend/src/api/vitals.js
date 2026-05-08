@@ -1,168 +1,123 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import apiClient from '../api/apiClient';
+import LoadingSpinner from './LoadingSpinner'; 
+import { getVitals, createVitals } from '../api/vitals';
 
 const Vitals = () => {
   const { id: patientId } = useParams();
-
   const [vitals, setVitals] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [form, setForm] = useState({
-    heartRate: '',
-    bloodPressure: '',
-    temperature: '',
-  });
+  const [errorMessage, setErrorMessage] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState({ heartRate: '', bloodPressure: '', temperature: '' });
 
-  // ✅ async function defined INSIDE the effect — linter is satisfied
+  // Requirement 6.2: Fixed Effect to avoid cascading renders and memory leaks
   useEffect(() => {
-    if (!patientId) return;
-
-    const loadVitals = async () => {
-      setLoading(true);
-      setError(null);
+    let isMounted = true;
+    const loadData = async () => {
       try {
-        const res = await apiClient.get(`/vitals/${patientId}`);
-        const sorted = (res.data || []).sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
-        setVitals(sorted);
-      } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load vitals.');
+        const res = await getVitals(patientId);
+        if (isMounted) {
+          const sorted = (res.data || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          setVitals(sorted);
+        }
+      } catch {
+        if (isMounted) setErrorMessage('Unable to load health records.');
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
-    loadVitals();
+    if (patientId) loadData();
+    return () => { isMounted = false; };
   }, [patientId]);
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await apiClient.post(`/vitals/${patientId}`, {
-        heartRate: Number(form.heartRate),
-        bloodPressure: form.bloodPressure,
-        temperature: Number(form.temperature),
-      });
+      await createVitals(patientId, form);
       setForm({ heartRate: '', bloodPressure: '', temperature: '' });
-
-      // ✅ Inline refresh after POST — no external fetchVitals needed
-      const res = await apiClient.get(`/vitals/${patientId}`);
-      const sorted = (res.data || []).sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      );
+      // Refresh data after successful POST
+      const res = await getVitals(patientId);
+      const sorted = (res.data || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       setVitals(sorted);
-
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to save vitals.');
+      setErrorMessage(err.response?.data?.message || 'Failed to save vitals.');
     } finally {
       setSubmitting(false);
     }
   };
 
-  const isAbnormal = (v) =>
-    v.heartRate < 60 || v.heartRate > 100 ||
-    v.temperature < 36 || v.temperature > 37.5;
+  const isAbnormal = (v) => 
+    v.heartRate < 60 || v.heartRate > 100 || v.temperature < 36 || v.temperature > 37.5;
 
-  if (loading) return <div style={centerStyle}>Loading vitals...</div>;
-  if (error) return <div style={{ ...centerStyle, color: 'red' }}>{error}</div>;
+  if (loading) return <LoadingSpinner />;
 
   return (
-    <div style={pageStyle}>
-      <h2 style={{ color: 'var(--primary-blue)', marginBottom: '20px' }}>
-        Patient Vitals
-      </h2>
+    <div className="vitals-wrapper">
+      <h2 className="section-title">Health Monitoring</h2>
 
-      {/* POST Form */}
-      <div style={cardStyle}>
-        <h3>Record New Vitals</h3>
-        <form onSubmit={handleSubmit} style={formStyle}>
+      {errorMessage && <div className="error-banner">{errorMessage}</div>}
+
+      {/* Requirement 4.4 & 6.3: Vitals Entry Form */}
+      <div className="vitals-card">
+        <h3>New Measurement</h3>
+        <form onSubmit={handleSubmit} className="vitals-inline-form">
           <input
             name="heartRate"
             type="number"
-            placeholder="Heart Rate (bpm)"
+            placeholder="Heart Rate"
             value={form.heartRate}
-            onChange={handleChange}
-            style={inputStyle}
+            onChange={(e) => setForm({ ...form, heartRate: e.target.value })}
             required
           />
           <input
             name="bloodPressure"
             type="text"
-            placeholder="Blood Pressure (120/80)"
+            placeholder="BP (e.g. 120/80)"
             value={form.bloodPressure}
-            onChange={handleChange}
-            style={inputStyle}
+            onChange={(e) => setForm({ ...form, bloodPressure: e.target.value })}
             required
           />
           <input
             name="temperature"
             type="number"
             step="0.1"
-            placeholder="Temperature (°C)"
+            placeholder="Temp (°C)"
             value={form.temperature}
-            onChange={handleChange}
-            style={inputStyle}
+            onChange={(e) => setForm({ ...form, temperature: e.target.value })}
             required
           />
-          <button type="submit" style={btnStyle} disabled={submitting}>
-            {submitting ? 'Saving...' : 'Save Vitals'}
+          <button type="submit" className="btn-save" disabled={submitting}>
+            {submitting ? 'Saving...' : 'Record'}
           </button>
         </form>
       </div>
 
-      {/* GET History */}
-      <div style={cardStyle}>
-        <h3>Vitals History</h3>
+      {/* Requirement 4.4 & 6.3: Vitals History with Abnormal Range logic */}
+      <div className="vitals-card">
+        <h3>History</h3>
         {vitals.length === 0 ? (
-          <p style={{ color: '#888', marginTop: '10px' }}>
-            No vitals recorded yet.
-          </p>
+          <p className="text-muted">No vitals recorded yet.</p>
         ) : (
-          vitals.map((v) => (
-            <div
-              key={v.id}
-              style={{
-                ...entryStyle,
-                background: isAbnormal(v) ? '#2a1f00' : 'transparent',
-                borderLeft: isAbnormal(v) ? '3px solid #f0a500' : '3px solid transparent',
-              }}
-            >
-              {isAbnormal(v) && (
-                <span style={{ color: '#f0a500', fontSize: '12px' }}>
-                  ⚠ Out of normal range
-                </span>
-              )}
-              <div style={rowStyle}>
-                <span><strong>HR:</strong> {v.heartRate} bpm</span>
-                <span><strong>BP:</strong> {v.bloodPressure}</span>
-                <span><strong>Temp:</strong> {v.temperature}°C</span>
-                <span style={{ color: '#888', fontSize: '12px' }}>
-                  {new Date(v.createdAt).toLocaleString()}
-                </span>
+          <div className="vitals-list">
+            {vitals.map((v) => (
+              <div key={v.id} className={`vitals-item ${isAbnormal(v) ? 'abnormal-entry' : ''}`}>
+                <div className="vitals-data-row">
+                  <span><strong>HR:</strong> {v.heartRate} bpm</span>
+                  <span><strong>BP:</strong> {v.bloodPressure}</span>
+                  <span><strong>Temp:</strong> {v.temperature}°C</span>
+                  <span className="vitals-date">{new Date(v.createdAt).toLocaleDateString()}</span>
+                </div>
+                {isAbnormal(v) && <span className="abnormal-badge">⚠ Attention Required</span>}
               </div>
-            </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
     </div>
   );
 };
-
-const pageStyle = { padding: '24px', maxWidth: '800px', margin: '0 auto' };
-const centerStyle = { textAlign: 'center', padding: '40px', color: '#888' };
-const cardStyle = { background: 'var(--card-surface)', padding: '20px', borderRadius: '12px', border: '1px solid var(--border-color)', marginBottom: '20px' };
-const formStyle = { display: 'flex', gap: '10px', marginTop: '15px', flexWrap: 'wrap' };
-const inputStyle = { padding: '10px', borderRadius: '6px', border: '1px solid #444', background: '#222', color: 'white', flex: '1', minWidth: '140px' };
-const btnStyle = { background: 'var(--primary-blue)', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '6px', cursor: 'pointer' };
-const entryStyle = { padding: '12px 10px', borderBottom: '1px solid #333', borderRadius: '6px', marginBottom: '4px' };
-const rowStyle = { display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginTop: '4px' };
 
 export default Vitals;

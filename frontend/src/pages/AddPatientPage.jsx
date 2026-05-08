@@ -6,7 +6,7 @@ const AddPatientPage = () => {
   const [formData, setFormData] = useState({ 
     name: '', 
     age: '', 
-    gender: '', // Added gender to state
+    gender: '', 
     condition: '' 
   });
   const [loading, setLoading] = useState(false);
@@ -16,9 +16,9 @@ const AddPatientPage = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      // POST /api/v4/patients
+      
       await apiClient.post('/patients', formData);
-      navigate('/patients'); // Return to directory after success
+      navigate('/patients'); 
     } catch (err) {
       console.error("Error adding patient:", err);
       alert("Failed to add patient. Please try again.");
@@ -48,7 +48,7 @@ const AddPatientPage = () => {
           required 
         />
 
-        {/* New Gender Selection Dropdown */}
+      
         <select 
           style={inputStyle} 
           value={formData.gender}
@@ -85,13 +85,13 @@ const inputStyle = {
   border: '1px solid #333', 
   color: 'white', 
   borderRadius: '8px',
-  display: 'block' // Ensures the select box matches the input layout
+  display: 'block' 
 };
 
 const buttonStyle = { 
   width: '100%', 
   padding: '12px', 
-  backgroundColor: '#2563eb', // Standard primary blue
+  backgroundColor: '#2563eb', 
   color: 'white', 
   fontWeight: 'bold', 
   border: 'none', 

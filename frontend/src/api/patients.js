@@ -1,12 +1,18 @@
-// src/api/patients.js
-import axios from 'axios';
+import apiClient from './apiClient';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+// 1. Existing function to get all patients
+export const getPatients = async () => {
+  const response = await apiClient.get('/patients');
+  return response.data || [];
+};
 
-export const deletePatient = async (id) => {
-  const token = localStorage.getItem('token');
-  const response = await axios.delete(`${API_URL}/api/patients/${id}`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
+// 2. MISSING FUNCTION: Add this to fix the error
+export const getPatientById = async (id) => {
+  const response = await apiClient.get(`/patients/${id}`);
   return response.data;
+};
+
+// 3. Existing function to delete a patient
+export const deletePatient = async (id) => {
+  return await apiClient.delete(`/patients/${id}`);
 };
