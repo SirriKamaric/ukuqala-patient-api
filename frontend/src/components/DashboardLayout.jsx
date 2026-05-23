@@ -47,19 +47,24 @@ const DashboardLayout = ({ children }) => {
 
   return (
     <div style={styles.wrapper}>
+      {/* Sidebar Navigation Panel */}
       <nav style={styles.sidebar}>
-        <h2 style={{ marginBottom: '40px' }}>UKUQALA</h2>
+        <h2 style={{ marginBottom: '40px', letterSpacing: '1px' }}>UKUQALA</h2>
         <Link to="/dashboard" style={styles.navLink}>Dashboard</Link>
         <Link to="/patients" style={styles.navLink}>Patients</Link>
+        
+        {/* Core Administrative Entry point */}
+        <Link to="/admin" style={styles.navLink}>Admin Panel</Link>
         
         <button onClick={handleLogout} style={styles.logoutBtn}>
           Logout
         </button>
       </nav>
 
+      {/* Primary Workspace Engine View */}
       <main style={styles.main}>
         <header style={{ marginBottom: '30px' }}>
-          <h1>Welcome, {user?.name || 'Practitioner'}</h1>
+          <h1>Welcome, {user?.name || user?.username || 'Practitioner'}</h1>
         </header>
         {children}
       </main>

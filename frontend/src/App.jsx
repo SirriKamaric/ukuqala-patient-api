@@ -9,6 +9,7 @@ import AddPatientPage from './pages/AddPatientPage';
 import EditPatientPage from './pages/EditPatientPage';
 import PatientDetailPage from './pages/PatientDetailPage';
 import Vitals from './components/Vitals';
+import AdminPanel from './pages/AdminPanel';
 
 const PrivateRoute = ({ children }) => {
   const { token } = useAuth();
@@ -23,11 +24,16 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
+          {/* Public Authentication Routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          
+          {/* Core Dashboard View */}
           <Route path="/dashboard" element={
             <PrivateRoute><DashboardPage /></PrivateRoute>
           } />
+          
+          {/* Patient Directory & Management Sub-modules */}
           <Route path="/patients" element={
             <PrivateRoute><PatientsPage /></PrivateRoute>
           } />
@@ -43,6 +49,13 @@ function App() {
           <Route path="/patients/:id/vitals" element={
             <PrivateRoute><Vitals /></PrivateRoute>
           } />
+          
+          {/* Secured System Administration Panel */}
+          <Route path="/admin" element={
+            <PrivateRoute><AdminPanel /></PrivateRoute>
+          } />
+          
+          {/* Global Fallback Route Redirect */}
           <Route path="/" element={<Navigate to="/dashboard" />} />
         </Routes>
       </Router>

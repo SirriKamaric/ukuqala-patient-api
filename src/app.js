@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const adminRoutes = require('./routes/admin');
 require('dotenv').config();
 
 // Requirement 4.1: Security & Cross-Origin Resource Sharing
@@ -28,7 +29,7 @@ app.use('/api/v4/auth', authRoutes);
  * (/api/v4/patients and /api/v4/patients/:id/vitals)
  */
 app.use('/api/v4/patients', patientRoutes);
-
+app.use('/api/v4/admin', adminRoutes);
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);

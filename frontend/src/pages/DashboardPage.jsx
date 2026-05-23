@@ -10,25 +10,49 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [stats, setStats] = useState({ totalPatients: 0, recentPatients: [] });
-  const [loading, setLoading] = useState(true);
+
+  // 1. Calculate clinical identification variables instantly during render phase
+  const localCustomDocs = JSON.parse(localStorage.getItem('custom_doctors') || '[]');
+  const currentDoctor = user?.email 
+    ? localCustomDocs.find((d) => d.email.toLowerCase() === user.email.toLowerCase())
+    : null;
+
+  const isApprovedDoctor = !currentDoctor || currentDoctor.workspaceStatus === 'APPROVED';
+
+  // 2. Set the initial loading state dynamically based on approval clearance 
+  // If they are blocked, loading is instantly false, preventing synchronous sets inside useEffect!
+  const [loading, setLoading] = useState(isApprovedDoctor);
 
   useEffect(() => {
+    // If derived state indicates the node is locked, stay quiet and do nothing
+    if (!isApprovedDoctor) {
+      return;
+    }
+
+    let isMounted = true;
     const loadDashboard = async () => {
+      setLoading(true);
       try {
         const patients = await getPatients();
-        setStats({
-          totalPatients: patients.length,
-          recentPatients: [...patients].reverse().slice(0, 5),
-        });
+        if (isMounted) {
+          setStats({
+            totalPatients: patients.length,
+            recentPatients: [...patients].reverse().slice(0, 5),
+          });
+        }
       } catch {
-        // Silently fail or update UI state to avoid 'err' unused warning
-        // Complies with Requirement 6.2: No console.logs in submission
+        // Complies with Requirement 6.2 (No console logs in production builds)
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
+
     loadDashboard();
-  }, []);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isApprovedDoctor]); 
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -37,6 +61,43 @@ export default function DashboardPage() {
     return 'Good evening';
   };
 
+  // --- RENDERING PHASE 1: LOCKED STATE INTERCEPTOR ---
+  if (!isApprovedDoctor) {
+    return (
+      <DashboardLayout>
+        <div id="center" style={{ 
+          height: '75vh', display: 'flex', flexDirection: 'column', 
+          justifyContent: 'center', alignItems: 'center', padding: '20px' 
+        }}>
+          <div style={{
+            backgroundColor: '#161b22', border: '1px solid #30363d',
+            padding: '40px', borderRadius: '12px', maxWidth: '500px', 
+            textAlign: 'center', boxShadow: '0 8px 24px rgba(0,0,0,0.2)'
+          }}>
+            <div style={{ fontSize: '48px', marginBottom: '16px' }}>⏳</div>
+            <h2 style={{ color: '#f8fafc', marginBottom: '12px', fontSize: '1.6rem' }}>
+              Registration Pending Verification
+            </h2>
+            <p style={{ color: '#8b949e', fontSize: '14px', lineHeight: '1.6', margin: '0 0 24px 0' }}>
+              Welcome, Dr. {user?.name || 'Practitioner'}. Your uploaded credentials, medical licenses, and academic certifications are currently inside our administrative evaluation queue.
+            </p>
+            <div style={{ 
+              backgroundColor: '#0d1117', border: '1px solid #21262d', 
+              padding: '12px', borderRadius: '6px', fontSize: '12px', 
+              color: '#dbab09', marginBottom: '24px', fontWeight: '500'
+            }}>
+              🔒 Status Node: Access Flag Restricted Until Admin Approval
+            </div>
+            <p style={{ color: '#8b949e', fontSize: '12px', margin: 0 }}>
+              Please check back shortly or contact the facility's workspace administrator.
+            </p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // --- RENDERING PHASE 2: NORMAL OPERATIONAL DASHBOARD ---
   return (
     <DashboardLayout>
       <div id="center">

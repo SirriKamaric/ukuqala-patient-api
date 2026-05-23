@@ -8,7 +8,6 @@ const EditPatientPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   
-  // Form state aligned with your database schema
   const [formData, setFormData] = useState({
     name: '',
     age: '',
@@ -16,7 +15,6 @@ const EditPatientPage = () => {
     condition: ''
   });
 
-  // Fetch the current patient data on load
   useEffect(() => {
     const fetchPatientData = async () => {
       try {
@@ -36,7 +34,7 @@ const EditPatientPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // API v4 PUT request to update the record
+      
       await apiClient.put(`/patients/${id}`, formData);
       alert("Patient updated successfully!");
       navigate('/patients');
@@ -98,7 +96,6 @@ const EditPatientPage = () => {
   );
 };
 
-// Internal styles to keep the UI consistent with your dashboard
 const formContainerStyle = { padding: '30px', backgroundColor: 'var(--card-surface)', borderRadius: '12px', border: '1px solid var(--border-color)' };
 const inputGroupStyle = { marginBottom: '15px', display: 'flex', flexDirection: 'column' };
 const inputStyle = { padding: '10px', borderRadius: '6px', border: '1px solid #444', backgroundColor: '#222', color: 'white', marginTop: '5px' };

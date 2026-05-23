@@ -13,16 +13,29 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    
     try {
       const data = await loginUser({ email, password });
+      
       if (data.token) {
+        // --- START PENDING QUALIFICATION GATEKEEPER ---
+        // Check local storage to see if this user registered as a clinician
+        const localCustomDocs = JSON.parse(localStorage.getItem('custom_doctors') || '[]');
+        const doctorProfile = localCustomDocs.find(d => d.email.toLowerCase() === email.toLowerCase());
+
+        if (doctorProfile && doctorProfile.workspaceStatus !== 'APPROVED') {
+          throw new Error('⏳ Access Denied: Your medical qualification credentials are currently pending administrative review.');
+        }
+        // --- END PENDING QUALIFICATION GATEKEEPER ---
+
         login(data.token, data.user || { name: email.split('@')[0] });
         navigate('/dashboard');
       } else {
         throw new Error('No token received.');
       }
     } catch (err) {
-      const serverMessage = err.response?.data?.message || 'Login failed. Please check your credentials.';
+      // Catch either our custom verification error or standard backend network rejection strings
+      const serverMessage = err.response?.data?.message || err.message || 'Login failed. Please check your credentials.';
       setError(serverMessage);
     }
   };
@@ -89,7 +102,8 @@ const styles = {
     color: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)',
     padding: '10px', borderRadius: '6px', marginBottom: '20px',
     textAlign: 'center', fontSize: '0.9rem',
-    border: '1px solid rgba(239, 68, 68, 0.2)'
+    border: '1px solid rgba(239, 68, 68, 0.2)',
+    lineHeight: '1.4'
   },
   footerText: { marginTop: '24px', textAlign: 'center', color: '#94a3b8' },
   link: { color: '#3b82f6', textDecoration: 'none', fontWeight: '500' }
