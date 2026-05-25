@@ -13,7 +13,7 @@ const startServer = async () => {
     console.log('✅ Connection has been established successfully.');
 
     // Requirement 4.4: Sync models (including Vitals) to PostgreSQL
-    await sequelize.sync({ alter: true });
+    sequelize.sync()
     console.log('✅ Database models synchronized.');
 
     app.listen(PORT, () => {

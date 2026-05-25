@@ -8,6 +8,7 @@ const Patient = sequelize.define('Patient', {
     defaultValue: () => uuidv4(),
     primaryKey: true,
   },
+
   name: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -15,37 +16,40 @@ const Patient = sequelize.define('Patient', {
       notEmpty: true
     }
   },
+
   age: {
     type: DataTypes.INTEGER,
     allowNull: false,
     validate: {
-      min: 0 // Prevents invalid academic data entries
+      min: 0
     }
   },
-  gender: { 
+
+  gender: {
     type: DataTypes.STRING,
     allowNull: true,
   },
+
   condition: {
     type: DataTypes.STRING,
     allowNull: false,
   },
+
   userId: {
-    type: DataTypes.UUID, 
-    allowNull: false,
-    references: {
-      model: 'Users', // Explicitly links to the practitioner table
-      key: 'id'
-    }
+    type: DataTypes.UUID,
+    allowNull: false
   }
+
 }, {
-  // Added for better database performance in your study
+
   indexes: [
     {
       fields: ['userId']
     }
   ],
-  timestamps: true // Tracks when patients are added/updated (Requirement 6.2)
+
+  timestamps: true
+
 });
 
 module.exports = Patient;

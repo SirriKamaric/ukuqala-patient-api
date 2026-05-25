@@ -1,0 +1,108 @@
+.patient-page {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.patient-form-card {
+  width: 100%;
+  max-width: 720px;
+  background: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 20px;
+  padding: 32px;
+}
+
+.patient-form-header h1 {
+  color: #f8fafc;
+  margin-bottom: 10px;
+  font-size: 1.8rem;
+}
+
+.patient-form-header p {
+  color: #94a3b8;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.patient-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  color: #cbd5e1;
+  margin-bottom: 8px;
+  font-size: 0.92rem;
+}
+
+.form-group input,
+.form-group select {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  color: #f8fafc;
+  padding: 14px;
+  border-radius: 12px;
+  outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #2563eb;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.secondary-btn {
+  background: transparent;
+  border: 1px solid #334155;
+  color: #f8fafc;
+  padding: 12px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.primary-btn {
+  background: #2563eb;
+  border: none;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.primary-btn:hover {
+  background: #1d4ed8;
+}
+
+@media (max-width: 768px) {
+  .patient-form-card {
+    padding: 24px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+}

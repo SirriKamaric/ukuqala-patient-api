@@ -1,31 +1,41 @@
-// const db = require('../config/db'); // Commented out to prevent MODULE_NOT_FOUND error since we are using mock data
+ // const db = require('../config/db');
 
-// 1. Fetch all doctors, their tickets, and verification states
+// 1. Fetch Doctors
 exports.getAdminDoctors = async (req, res) => {
   try {
-    // Relational SQL query fetching profile info and relational states
-    // const result = await db.query('SELECT * FROM doctors ORDER BY name ASC');
-    // return res.json(result.rows);
-
-    // Reliable fallback mock data matching frontend expectations
     const mockDoctors = [
       {
         id: "DOC-CHW-01",
         name: "Dr. Benatsus Chenwie",
+        email: "benatsus@gmail.com",
+        specialty: "Cardiologist",
+        avatar: "",
+        workspaceStatus: "APPROVED",
         licenseStatus: "APPROVED",
         idStatus: "PENDING",
         diplomaStatus: "PENDING",
         appointments: [
-          { id: "a1", date: "2026-05-20", status: "Pending" },
-          { id: "a2", date: "2026-05-22", status: "Completed" }
+          {
+            id: "a1",
+            date: "2026-05-20",
+            status: "Pending"
+          }
         ],
         tickets: [
-          { id: "t1", issue: "Database synchronization timeout error on login", status: "OPEN" }
+          {
+            id: "t1",
+            issue: "Login synchronization error",
+            status: "OPEN"
+          }
         ]
       },
       {
         id: "DOC-BIN-02",
         name: "Dr. Quinta Binwie",
+        email: "quinta@gmail.com",
+        specialty: "Neurologist",
+        avatar: "",
+        workspaceStatus: "PENDING",
         licenseStatus: "PENDING",
         idStatus: "APPROVED",
         diplomaStatus: "APPROVED",
@@ -33,60 +43,61 @@ exports.getAdminDoctors = async (req, res) => {
         tickets: []
       }
     ];
+
     res.json(mockDoctors);
+
   } catch (error) {
-    res.status(500).json({ message: "Database read failure during system scan." });
+    res.status(500).json({
+      message: "Failed to fetch doctors."
+    });
   }
 };
 
-// 2. Fetch specific appointments for filtering
+// 2. Doctor Appointments
 exports.getDoctorAppointments = async (req, res) => {
-  const { id } = req.params;
   try {
-    // const result = await db.query('SELECT * FROM appointments WHERE doctor_id = $1', [id]);
-    // res.json(result.rows);
     res.json([]);
   } catch (error) {
-    res.status(500).json({ message: "Unable to retrieve specific appointment records." });
+    res.status(500).json({
+      message: "Unable to retrieve appointments."
+    });
   }
 };
 
-// 3. Update Verification Document States
+// 3. Verify Documents
 exports.verifyDocument = async (req, res) => {
-  const { id } = req.params;
-  const { docType, status } = req.body; // e.g., docType: 'license', status: 'APPROVED'
-  
+  const { docType, status } = req.body;
+
   try {
-    // Dynamic validation query based on document column requirements
-    // const allowedColumns = ['licenseStatus', 'idStatus', 'diplomaStatus'];
-    // if (allowedColumns.includes(docType)) {
-    //   await db.query(`UPDATE doctors SET ${docType} = $1 WHERE id = $2`, [status, id]);
-    // }
-    
-    res.status(200).json({ message: `Document category [${docType}] updated successfully to ${status}.` });
+    res.status(200).json({
+      message: `${docType} updated to ${status}`
+    });
   } catch (error) {
-    res.status(400).json({ message: "Execution failure: Status update rejected." });
+    res.status(400).json({
+      message: "Verification failed."
+    });
   }
 };
 
-// 4. Resolve Active Support Tickets
+// 4. Resolve Tickets
 exports.handleDoctorTicket = async (req, res) => {
   const { id } = req.params;
   const { action } = req.body;
+
   try {
-    // await db.query('UPDATE tickets SET status = $1 WHERE id = $2', [action, id]);
-    res.status(200).json({ message: `Ticket ${id} closed via action state: ${action}` });
+    res.status(200).json({
+      message: `Ticket ${id} updated to ${action}`
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server error during administrative ticket mutation." });
+    res.status(500).json({
+      message: "Ticket update failed."
+    });
   }
 };
 
-// 5. Fetch comprehensive Patient records 
+// 5. Fetch Patients
 exports.getAdminPatients = async (req, res) => {
   try {
-    // const result = await db.query('SELECT * FROM patients ORDER BY created_at DESC');
-    // res.json(result.rows);
-
     const mockPatients = [
       {
         id: "PAT-001",
@@ -94,17 +105,52 @@ exports.getAdminPatients = async (req, res) => {
         age: 28,
         bloodGroup: "O+",
         location: "Yaoundé",
-        height: 178,
         appointments: [
-          { id: "pa1", time: "10:30 AM", doctorName: "Dr. Benatsus Chenwie" }
-        ],
-        tickets: [
-          { id: "pt1", subject: "Profile image upload compression bug", status: "Open" }
+          {
+            id: "pa1",
+            doctorName: "Dr. Benatsus Chenwie"
+          }
         ]
       }
     ];
+
     res.json(mockPatients);
+
   } catch (error) {
-    res.status(500).json({ message: "Failed to gather patient profiles context." });
+    res.status(500).json({
+      message: "Failed to fetch patients."
+    });
+  }
+};
+
+// 6. Upload Doctor Avatar
+exports.uploadDoctorAvatar = async (req, res) => {
+  const { id } = req.params;
+  const { avatar } = req.body;
+
+  try {
+    res.status(200).json({
+      message: `Avatar updated for ${id}`,
+      avatar
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Avatar upload failed."
+    });
+  }
+};
+
+// 7. Delete Doctor
+exports.deleteDoctor = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    res.status(200).json({
+      message: `Doctor ${id} deleted successfully`
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Doctor deletion failed."
+    });
   }
 };

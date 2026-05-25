@@ -1,34 +1,130 @@
-@import './global.css';
+.patients-page {
+  width: 100%;
+}
 
-/* ─── Page Header Row ───────────────────────────────────────── */
 .patients-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 28px;
+  align-items: center;
+  margin-bottom: 30px;
 }
 
-/* ─── Responsive ────────────────────────────────────────────── */
+.patients-header h1 {
+  font-size: 42px;
+  color: white;
+  margin-bottom: 8px;
+}
+
+.patients-header p {
+  color: #94a3b8;
+  font-size: 15px;
+}
+
+.primary-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 14px 22px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.primary-btn:hover {
+  background: #1d4ed8;
+}
+
+.patients-card {
+  background: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 18px;
+  padding: 24px;
+  margin-top: 20px;
+  width: 100%;
+  max-width: 900px;
+}
+
+.patients-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.patients-table th {
+  text-align: left;
+  padding: 16px;
+  color: #94a3b8;
+  font-size: 14px;
+  border-bottom: 1px solid #1f2937;
+}
+
+.patients-table td {
+  padding: 18px 16px;
+  color: white;
+  border-bottom: 1px solid #1f2937;
+}
+
+.patients-table tr:hover {
+  background: rgba(255,255,255,0.02);
+}
+
+.patient-name {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 10px;
+}
+
+.edit-btn,
+.delete-btn {
+  border: none;
+  padding: 9px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.edit-btn {
+  background: #2563eb;
+  color: white;
+}
+
+.edit-btn:hover {
+  background: #1d4ed8;
+}
+
+.delete-btn {
+  background: #7f1d1d;
+  color: white;
+}
+
+.delete-btn:hover {
+  background: #991b1b;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #94a3b8;
+}
+
 @media (max-width: 768px) {
   .patients-header {
     flex-direction: column;
-    gap: 14px;
+    align-items: flex-start;
+    gap: 16px;
   }
 
-  .page-wrapper {
-    padding: 20px 16px;
+  .patients-card {
+    overflow-x: auto;
   }
 
-  .table th,
-  .table td {
-    padding: 10px 12px;
-  }
-}
-
-@media (max-width: 480px) {
-  /* Hide less critical columns on very small screens */
-  .table .col-condition,
-  .table .col-gender {
-    display: none;
+  .actions-cell {
+    flex-direction: column;
   }
 }

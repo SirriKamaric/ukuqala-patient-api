@@ -1,75 +1,135 @@
-import { useAuth } from "../hooks/useAuth";
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
-const DashboardLayout = ({ children }) => {
+export default function DashboardLayout({
+  children
+}) {
+
   const { user, logout } = useAuth();
+
   const navigate = useNavigate();
 
   const handleLogout = () => {
+
     logout();
     navigate('/login');
   };
 
-  const styles = {
-    wrapper: { display: 'flex', height: '100vh', width: '100vw' },
-    sidebar: {
-      width: '220px',
-      backgroundColor: 'var(--primary-blue)', // The #1A73E8 blue
-      padding: '20px',
-      display: 'flex',
-      flexDirection: 'column',
-      color: 'white'
-    },
-    main: { 
-      flex: 1, 
-      backgroundColor: 'var(--dark-bg)', // The #0D1117 dark background
-      padding: '40px', 
-      overflowY: 'auto',
-      color: 'var(--text-primary)'
-    },
-    navLink: { 
-      color: 'white', 
-      textDecoration: 'none', 
-      display: 'block', 
-      margin: '15px 0', 
-      fontWeight: '500'
-    },
-    logoutBtn: { 
-      backgroundColor: 'transparent', 
-      border: '1px solid white', 
-      color: 'white', 
-      marginTop: 'auto',
-      padding: '10px',
-      borderRadius: '5px',
-      cursor: 'pointer'
-    }
-  };
-
   return (
-    <div style={styles.wrapper}>
-      {/* Sidebar Navigation Panel */}
-      <nav style={styles.sidebar}>
-        <h2 style={{ marginBottom: '40px', letterSpacing: '1px' }}>UKUQALA</h2>
-        <Link to="/dashboard" style={styles.navLink}>Dashboard</Link>
-        <Link to="/patients" style={styles.navLink}>Patients</Link>
-        
-        {/* Core Administrative Entry point */}
-        <Link to="/admin" style={styles.navLink}>Admin Panel</Link>
-        
-        <button onClick={handleLogout} style={styles.logoutBtn}>
+
+    <div
+      style={{
+        display: 'flex',
+        minHeight: '100vh',
+        background: '#0D1117'
+      }}
+    >
+
+      {/* Sidebar */}
+
+      <aside
+        style={{
+          width: '240px',
+          background: '#161B22',
+          borderRight: '1px solid #30363d',
+          padding: '24px',
+          color: '#fff'
+        }}
+      >
+
+        <h2
+          style={{
+            marginBottom: '40px'
+          }}
+        >
+          UKUQALA
+        </h2>
+
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '18px'
+          }}
+        >
+
+          <Link
+            to="/dashboard"
+            style={linkStyle}
+          >
+            Dashboard
+          </Link>
+
+          <Link
+            to="/patients"
+            style={linkStyle}
+          >
+            Patients
+          </Link>
+
+          <Link
+            to="/admin"
+            style={linkStyle}
+          >
+            Admin Panel
+          </Link>
+
+        </div>
+
+        <button
+          onClick={handleLogout}
+          style={{
+            marginTop: '40px',
+            width: '100%',
+            padding: '12px',
+            background: '#1f6feb',
+            border: 'none',
+            borderRadius: '10px',
+            color: '#fff',
+            cursor: 'pointer'
+          }}
+        >
           Logout
         </button>
-      </nav>
 
-      {/* Primary Workspace Engine View */}
-      <main style={styles.main}>
-        <header style={{ marginBottom: '30px' }}>
-          <h1>Welcome, {user?.name || user?.username || 'Practitioner'}</h1>
-        </header>
+      </aside>
+
+      {/* Main */}
+
+      <main
+        style={{
+          flex: 1,
+          padding: '32px',
+          color: '#fff',
+          overflowY: 'auto'
+        }}
+      >
+
+        <div
+          style={{
+            marginBottom: '30px'
+          }}
+        >
+
+          <h1>
+            Welcome, {
+              user?.name ||
+              'User'
+            }
+          </h1>
+
+        </div>
+
         {children}
+
       </main>
+
     </div>
   );
-};
+}
 
-export default DashboardLayout;
+const linkStyle = {
+  color: '#fff',
+  textDecoration: 'none',
+  fontSize: '16px'
+};

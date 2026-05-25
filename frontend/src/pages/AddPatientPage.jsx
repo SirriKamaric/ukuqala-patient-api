@@ -1,102 +1,188 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import apiClient from '../api/apiClient';
 
-const AddPatientPage = () => {
-  const [formData, setFormData] = useState({ 
-    name: '', 
-    age: '', 
-    gender: '', 
-    condition: '' 
-  });
-  const [loading, setLoading] = useState(false);
+export default function AddPatientPage() {
+
   const navigate = useNavigate();
+
+  const [form, setForm] = useState({
+    name: '',
+    age: '',
+    condition: '',
+    gender: ''
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const updateField = (key, value) => {
+    setForm(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setLoading(true);
+    setError('');
+
     try {
-      
-      await apiClient.post('/patients', formData);
-      navigate('/patients'); 
+
+      await apiClient.post('/patients', {
+        name: form.name,
+        age: Number(form.age),
+        condition: form.condition,
+        gender: form.gender
+      });
+
+      navigate('/patients');
+
     } catch (err) {
-      console.error("Error adding patient:", err);
-      alert("Failed to add patient. Please try again.");
+
+      setError(
+        err.response?.data?.message ||
+        'Failed to create patient'
+      );
+
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ padding: '40px', color: 'white' }}>
-      <h2>Add New Patient</h2>
-      <form onSubmit={handleSubmit} style={{ maxWidth: '400px', marginTop: '20px' }}>
-        <input 
-          style={inputStyle} 
-          placeholder="Patient Name" 
-          value={formData.name}
-          onChange={(e) => setFormData({...formData, name: e.target.value})}
-          required 
-        />
-        
-        <input 
-          type="number" 
-          style={inputStyle} 
-          placeholder="Age" 
-          value={formData.age}
-          onChange={(e) => setFormData({...formData, age: e.target.value})}
-          required 
-        />
+    <div style={styles.wrapper}>
 
-      
-        <select 
-          style={inputStyle} 
-          value={formData.gender}
-          onChange={(e) => setFormData({...formData, gender: e.target.value})}
-          required
-        >
-          <option value="" disabled>Select Gender</option>
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-          <option value="Other">Other</option>
-        </select>
+      <div style={styles.card}>
 
-        <input 
-          style={inputStyle} 
-          placeholder="Primary Condition" 
-          value={formData.condition}
-          onChange={(e) => setFormData({...formData, condition: e.target.value})}
-          required 
-        />
+        <h1 style={styles.title}>Add Patient</h1>
 
-        <button type="submit" disabled={loading} style={buttonStyle}>
-          {loading ? 'Registering...' : 'Register Patient'}
-        </button>
-      </form>
+        <p style={styles.subtitle}>
+          Register a new patient record
+        </p>
+
+        {error && (
+          <div style={styles.error}>
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+
+          <input
+            type="text"
+            placeholder="Patient Name"
+            value={form.name}
+            onChange={(e) => updateField('name', e.target.value)}
+            style={styles.input}
+            required
+          />
+
+          <input
+            type="number"
+            placeholder="Age"
+            value={form.age}
+            onChange={(e) => updateField('age', e.target.value)}
+            style={styles.input}
+            required
+          />
+
+          {/* ✅ NEW GENDER FIELD */}
+          <select
+            value={form.gender}
+            onChange={(e) => updateField('gender', e.target.value)}
+            style={styles.input}
+            required
+          >
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+
+          <input
+            type="text"
+            placeholder="Condition"
+            value={form.condition}
+            onChange={(e) => updateField('condition', e.target.value)}
+            style={styles.input}
+            required
+          />
+
+          <button
+            type="submit"
+            style={styles.button}
+          >
+            {loading ? 'Saving...' : 'Create Patient'}
+          </button>
+
+        </form>
+
+      </div>
+
     </div>
   );
-};
+}
 
-const inputStyle = { 
-  width: '100%', 
-  padding: '12px', 
-  marginBottom: '15px', 
-  backgroundColor: '#1a1a1a', 
-  border: '1px solid #333', 
-  color: 'white', 
-  borderRadius: '8px',
-  display: 'block' 
-};
+const styles = {
+  wrapper: {
+    minHeight: '100vh',
+    background: '#0D1117',
+    padding: '40px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
 
-const buttonStyle = { 
-  width: '100%', 
-  padding: '12px', 
-  backgroundColor: '#2563eb', 
-  color: 'white', 
-  fontWeight: 'bold', 
-  border: 'none', 
-  borderRadius: '8px', 
-  cursor: 'pointer' 
-};
+  card: {
+    width: '100%',
+    maxWidth: '500px',
+    background: '#161B22',
+    padding: '32px',
+    borderRadius: '18px',
+    border: '1px solid #30363d'
+  },
 
-export default AddPatientPage;
+  title: {
+    color: '#fff',
+    marginBottom: '8px'
+  },
+
+  subtitle: {
+    color: '#8b949e',
+    marginBottom: '25px'
+  },
+
+  input: {
+    width: '100%',
+    padding: '14px',
+    marginBottom: '18px',
+    borderRadius: '10px',
+    border: '1px solid #30363d',
+    background: '#0D1117',
+    color: '#fff',
+    boxSizing: 'border-box'
+  },
+
+  button: {
+    width: '100%',
+    padding: '14px',
+    border: 'none',
+    borderRadius: '10px',
+    background: '#1f6feb',
+    color: '#fff',
+    fontWeight: '600',
+    cursor: 'pointer'
+  },
+
+  error: {
+    background: '#2d1617',
+    color: '#ff7b72',
+    padding: '10px',
+    borderRadius: '8px',
+    marginBottom: '18px'
+  }
+};
